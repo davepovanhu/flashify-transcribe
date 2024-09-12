@@ -23,11 +23,9 @@ GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
 print(GOOGLE_API_KEY)
 genai.configure(api_key=GOOGLE_API_KEY)
 
-
 @app.get("/")
 async def health_check():
     return {"status": "Service is up and running"}
-
 
 @app.post("/transcribe/")
 async def transcribe(file: UploadFile = File(...)):
@@ -36,6 +34,10 @@ async def transcribe(file: UploadFile = File(...)):
     and generate a summarized version of the transcription.
     """
     try:
+        # Display the MIME type of the file
+        mime_type = file.content_type
+        print(f"Uploaded file MIME type: {mime_type}")
+
         # Save the uploaded file locally
         file_location = f"./{file.filename}"
         with open(file_location, "wb+") as file_object:
@@ -58,12 +60,12 @@ async def transcribe(file: UploadFile = File(...)):
         # Clean up local file
         os.remove(file_location)
 
-        # Return the results
+        # Return the results including MIME type
         return {
+            "mime_type": mime_type,
             "transcription": transcription_result.text,
             "summary": summary_result.text,
         }
 
     except Exception as e:
         return {"error": str(e)}
-
