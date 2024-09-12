@@ -23,6 +23,12 @@ GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
 print(GOOGLE_API_KEY)
 genai.configure(api_key=GOOGLE_API_KEY)
 
+
+@app.get("/")
+async def health_check():
+    return {"status": "Service is up and running"}
+
+
 @app.post("/transcribe/")
 async def transcribe(file: UploadFile = File(...)):
     """
